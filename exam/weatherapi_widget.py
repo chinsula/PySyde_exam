@@ -4,7 +4,7 @@
 """
 
 from PySide6 import QtWidgets
-from a_threads import WeatherHandler
+from threads import WeatherHandler
 
 
 class Window(QtWidgets.QWidget):
@@ -20,8 +20,6 @@ class Window(QtWidgets.QWidget):
         """
         self.inputСity = QtWidgets.QLineEdit()
         self.inputСity.setPlaceholderText("Введите название населенного пункта")
-        # self.inputDelay = QtWidgets.QLineEdit()
-        # self.inputDelay.setPlaceholderText("Введите время задержки")
         self.outputWheather = QtWidgets.QTextEdit()
         self.outputWheather.setEnabled(False)
         self.pushButtonHandle = QtWidgets.QPushButton("Старт")
@@ -42,7 +40,8 @@ class Window(QtWidgets.QWidget):
         """
         Метод для запуска и остановки потока
         :param status: статус запуска
-        :return:
+        :return: возвращаем состояние, при котором нет активных потоков (при неактивном статусе (False)
+        принудительно закрываем поток для исключения состояния гонки)
         """
 
         self.inputСity.setEnabled(not status)
@@ -53,7 +52,6 @@ class Window(QtWidgets.QWidget):
             return
         self.weatherHandler = WeatherHandler("" if not self.inputСity.text() else self.inputСity.text())
         self.weatherHandler.start()
-        self.weatherHandler.sleep(self.weatherHandler.delay1)
         self.weatherHandler.wheatherHandlerSignal.connect(self.apiUpdate)
 
     def apiUpdate(self, data):

@@ -10,19 +10,21 @@ from PySide6 import QtCore
 
 
 class WeatherHandler(QtCore.QThread):
-    wheatherHandlerSignal = QtCore.Signal(str)  # Пропишите сигналы, которые считаете нужными
+    wheatherHandlerSignal = QtCore.Signal(str)
 
     def __init__(self, city: str, parent=None):
         super().__init__(parent)
         self.__city = city
-        self.__delay = 10
         self.__status = None
-        self.delay1 = 1
 
     def set_city(self, city: str) -> None:
         self.__city = city
 
     def get_weather(self):
+        """
+        Функция получения данных о погоде
+        :return: словарь с выбранными параметрами погоды, либо сообщение об ошибке
+        """
         open_weather_token = "1044ae1ab27265501dac183236ffd563"
 
         code_to_smile = {
@@ -67,17 +69,6 @@ class WeatherHandler(QtCore.QThread):
             mes_repl = "Проверьте название города"
         return mes_repl
 
-    def setDelay(self, delay) -> None:
-        """
-        Метод для установки времени задержки обновления сайта
-
-        :param delay: время задержки обновления информации о доступности сайта
-        :return: None
-        """
-
-        self.delay1 = delay
-
     def run(self) -> None:
         while True:
             self.wheatherHandlerSignal.emit(self.get_weather())
-            time.sleep(self.delay1)
