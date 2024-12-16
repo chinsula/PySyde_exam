@@ -1,12 +1,8 @@
 """
-Реализовать виджет, который будет работать с потоком WeatherHandler из модуля a_threads
-Создавать форму можно как в ручную, так и с помощью программы Designer
-Форма должна содержать:
-1. поле для ввода широты и долготы (после запуска потока они должны блокироваться)
-2. поле для ввода времени задержки (после запуска потока оно должно блокироваться)
-3. поле для вывода информации о погоде в указанных координатах
-4. поток необходимо запускать и останавливать при нажатии на кнопку
+Виджет погоды. Обращаемся по названию к населенному пункту, русский язык либо транслит.
+Получаем сводку погоды.
 """
+
 from PySide6 import QtWidgets
 from a_threads import WeatherHandler
 
@@ -22,8 +18,8 @@ class Window(QtWidgets.QWidget):
         Инициализация Ui
         :return: None
         """
-        self.inputSity = QtWidgets.QLineEdit()
-        self.inputSity.setPlaceholderText("Введите название населенного пункта")
+        self.inputСity = QtWidgets.QLineEdit()
+        self.inputСity.setPlaceholderText("Введите название населенного пункта")
         # self.inputDelay = QtWidgets.QLineEdit()
         # self.inputDelay.setPlaceholderText("Введите время задержки")
         self.outputWheather = QtWidgets.QTextEdit()
@@ -31,35 +27,37 @@ class Window(QtWidgets.QWidget):
         self.pushButtonHandle = QtWidgets.QPushButton("Старт")
         self.pushButtonHandle.setCheckable(True)
         layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(self.inputSity)
+        layout.addWidget(self.inputСity)
         # layout.addWidget(self.inputDelay)
         layout.addWidget(self.outputWheather)
         layout.addWidget(self.pushButtonHandle)
         self.setLayout(layout)
         self.setMinimumSize(300, 140)
-        self.message = self.inputSity.text()
+        self.message = self.inputСity.text()
 
     def __initSignals(self):
         self.pushButtonHandle.clicked.connect(self.on_started)
 
-    def on_started(self, status):
+    def on_started(self, status: bool):
+        """
+        Метод для запуска и остановки потока
+        :param status: статус запуска
+        :return:
+        """
+
+        self.inputСity.setEnabled(not status)
         self.pushButtonHandle.setText("Стоп" if status else "Старт")
-        self.weatherHandler = WeatherHandler("" if not self.inputSity.text() else self.inputSity.text())
+        if not status:
+            self.weatherHandler.terminate()
+            self.weatherHandler.wait(0.5)
+            return
+        self.weatherHandler = WeatherHandler("" if not self.inputСity.text() else self.inputСity.text())
         self.weatherHandler.start()
         self.weatherHandler.sleep(self.weatherHandler.delay1)
-        # self.weatherHandler.wheatherHandlerSignal.connect(lambda data: print(f"Статус код: {data}"))
         self.weatherHandler.wheatherHandlerSignal.connect(self.apiUpdate)
 
     def apiUpdate(self, data):
-        if self.pushButtonHandle.isChecked():
-            self.inputSity.setEnabled(False)
-            self.outputWheather.setText(f"{data}")
-
-        elif not self.pushButtonHandle.isChecked():
-            self.inputSity.setEnabled(True)
-
-
-
+        self.outputWheather.setText(f"{data}")
 
 
 if __name__ == "__main__":
@@ -67,5 +65,3 @@ if __name__ == "__main__":
     window = Window()
     window.show()
     app.exec()
-
-
