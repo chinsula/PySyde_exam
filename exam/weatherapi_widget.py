@@ -18,6 +18,7 @@ class Window(QtWidgets.QWidget):
         Инициализация Ui
         :return: None
         """
+        self.setWindowTitle("Погода в любой точке мира")
         self.inputСity = QtWidgets.QLineEdit()
         self.inputСity.setPlaceholderText("Введите название населенного пункта")
         self.outputWheather = QtWidgets.QTextEdit()
@@ -26,11 +27,10 @@ class Window(QtWidgets.QWidget):
         self.pushButtonHandle.setCheckable(True)
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.inputСity)
-        # layout.addWidget(self.inputDelay)
         layout.addWidget(self.outputWheather)
         layout.addWidget(self.pushButtonHandle)
         self.setLayout(layout)
-        self.setMinimumSize(300, 140)
+        self.setMinimumSize(350, 140)
         self.message = self.inputСity.text()
 
     def __initSignals(self):
